@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<script>
+window.onload = function () {
+    var values = {};
+    var pairs = document.location.search.substring(1).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=', 2);
+        values[pair[0]] = decodeURIComponent(pair[1] || '');
+    }
+    document.querySelector('.page_no').textContent = 'Seite ' + values.page + '/' + values.topage;
+};
+</script></head>
+<body style="margin:0;padding:0;font:11px Arial,sans-serif;color:#333">
+<div style="border-top:1px solid #666;padding:8px 12px">Footer fixture | Zürich | <span class="page_no"></span></div>
+</body></html>

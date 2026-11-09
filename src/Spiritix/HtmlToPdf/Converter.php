@@ -40,7 +40,9 @@ class Converter
     /**
      * Relative path to the AMD library,
      */
-    const PATH_BINARY_AMD = 'h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64';
+    const PATH_BINARY_AMD = 'silvertipsoftware/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64';
+
+    const PATH_BINARY_ARM64 = 'bin/linux-arm64/wkhtmltopdf';
 
     /**
      * Input instance.
@@ -237,7 +239,7 @@ class Converter
             $optionsString .= $key . (empty($value) ? '' : ' ' . escapeshellarg($value)) . ' ';
         }
 
-        $command = $this->getBinaryPath() . ' ' . $optionsString . ' - -';
+        $command = escapeshellarg($this->getBinaryPath()) . ' ' . $optionsString . ' - -';
 
         return $command;
     }
@@ -289,8 +291,35 @@ class Converter
      */
     private function getBinaryPath()
     {
-        $system = $this->executeShellCommand('uname -a | grep 64');
-        $library = (!empty($system['output'])) ? self::PATH_BINARY_AMD : self::PATH_BINARY_INTEL;
+        $system = $this->executeShellCommand('uname -m');
+        $architecture = trim($system['output']);
+
+        switch ($architecture) {
+            case 'aarch64':
+            case 'arm64':
+                $binaryPath = dirname(__FILE__) . '/../../../' . self::PATH_BINARY_ARM64;
+
+                if (!is_executable($binaryPath)) {
+                    throw new ConverterException('ARM64 binary is missing or not executable');
+                }
+
+                return $binaryPath;
+
+            case 'x86_64':
+            case 'amd64':
+                $library = self::PATH_BINARY_AMD;
+                break;
+
+            case 'i386':
+            case 'i486':
+            case 'i586':
+            case 'i686':
+                $library = self::PATH_BINARY_INTEL;
+                break;
+
+            default:
+                throw new ConverterException('Unsupported CPU architecture: ' . $architecture);
+        }
 
         // First of all we try a path assuming that this library is installed as a package
         $binaryPath = dirname(__FILE__) . '/../../../../../' . $library;
