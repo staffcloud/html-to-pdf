@@ -1,8 +1,8 @@
 {
-    "name": "julwil/html-to-pdf",
+    "name": "spiritix/html-to-pdf",
     "type": "library",
     "description": "Convert HTML markup into beautiful PDF files using the famous wkhtmltopdf library",
-    "license": "MIT",
+    "license": "(MIT AND LGPL-3.0-only)",
     "keywords": ["php","html","pdf","htmltopdf","print","converter"],
     "authors": [
         {

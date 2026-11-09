@@ -1,5 +1,33 @@
 # HtmlToPdf
 
+## Staffcloud ARM64 build
+
+This fork starts from `julwil/html-to-pdf` v3.0. Its PHP API and rendering options
+are unchanged. Linux ARM64 uses the bundled wkhtmltopdf 0.12.6.1 executable with
+patched Qt. x86-64 keeps `silvertipsoftware/wkhtmltopdf-amd64` 0.12.5; 32-bit x86
+keeps `h4cc/wkhtmltopdf-i386` 0.12.4. Other CPU architectures fail explicitly.
+
+The package name remains `spiritix/html-to-pdf`, as on this repository's default
+branch. To use this fork, add `https://github.com/staffcloud/html-to-pdf` as a
+Composer VCS repository and require `spiritix/html-to-pdf` version `3.0.1`.
+Do not install it alongside `julwil/html-to-pdf`: both provide the same classes.
+
+See [binary provenance and runtime requirements](bin/linux-arm64/README.md).
+The system `wkhtmltopdf` executable is not used. wkhtmltopdf is archived; this
+release restores ARM execution without migrating templates to another engine.
+
+Run `php tests/architecture.php` against a Composer installation. The standalone
+regression checks do not need the original PHPUnit 5 development dependencies.
+`HTML_TO_PDF_AUTOLOAD` can select an external installation's autoloader.
+
+For headless rendering checks, build `tests/integration/Dockerfile` for
+`linux/arm64`, mount the package and a Composer installation read-only, and run
+`sh tests/integration/run.sh /output`. For the x86 baseline, build for
+`linux/amd64` with `BASE=ubuntu:20.04` and `SSL_PACKAGE=libssl1.1`.
+The fixtures serve only synthetic HTML on container loopback and use private
+temporary directories. Check all three PDFs for repeated headers/footers,
+`Seite 1/3` through `Seite 3/3`, A4 pages and intact accented text.
+
 Convert HTML markup into beautiful PDF files using the famous wkhtmltopdf library.
 
 [![Build Status](https://travis-ci.org/spiritix/html-to-pdf.svg?branch=master)](https://travis-ci.org/spiritix/html-to-pdf)
